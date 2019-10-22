@@ -1,0 +1,187 @@
+<eagle>
+  <data>
+
+      <!--&lt;!&ndash;TODO:Fetch All Comment and Like &ndash;&gt;-->
+      <!--<record id="comment_and like_facebook_post_cron" model="ir.cron">-->
+			<!--<field name="name">Fetch Facebook Comment and Liks</field>-->
+			<!--<field name="active" eval="True"/>-->
+			<!--<field name="state" eval="'code'"/>-->
+			<!--<field name="priority" eval="5"/>-->
+            <!--<field name="interval_number">1</field>-->
+            <!--<field name="interval_type">minute</field>-->
+            <!--<field name="numbercall">-1</field>-->
+            <!--<field name="doall" eval="False"/>-->
+            <!--<field name="model_id" ref="facebook_and_eagle.model_facebook_pages_config"/>-->
+            <!--<field name="code" eval="'model.fetch_all_comment()'"/>-->
+
+      <!--</record>-->
+
+    <record id="view_facebook_pages_form" model="ir.ui.view">
+        <field name="name">view.facebook.pages.config.form</field>
+        <field name="model">facebook.pages.config</field>
+        <field name="arch" type="xml">
+            <form string="Facebook Pages">
+                <header>
+                    <button name="fetch_all_comment" string="Fetch Comment" class="oe_highlight" type="object"/>
+                    <!--<field name="state" widget="statusbar" statusbar_visible="" statusbar_colors="{'KEY_IS_STATE':'VALUE_IS_COLOR'}"/>-->
+                </header>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="access_token" password="1" class="oe_edit_only"/>
+                        <field name="page_id" password="1"/>
+                        <field name="fb_api_version" placeholder="Graph API Explorer Version like 3.3"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_facebook_pages_tree" model="ir.ui.view">
+        <field name="name">view.facebook.pages.config.tree</field>
+        <field name="model">facebook.pages.config</field>
+        <field name="arch" type="xml">
+            <tree string="Facebook pages">
+                <field name="name"/>
+                <!--<field name="access_token"/>-->
+                <field name="fb_api_version" />
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_facebook_pages_action" model="ir.actions.act_window">
+        <field name="name">Facebook Pages</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">facebook.pages.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            <!-- Add Text Here -->
+          </p><p>
+            <!-- More details about what a user can do with this object will be OK -->
+          </p>
+        </field>
+    </record>
+
+    <menuitem id="facebook_menu_root" name="Facebook" sequence="5"/>
+    <menuitem id="facebook_menu_categ" name="Configration" parent="facebook_menu_root" sequence="2"/>
+    <menuitem id="facebook_menu_pages_action" name="Pages" parent="facebook_menu_categ" action="view_facebook_pages_action" sequence="1"/>
+
+
+
+      <record id="view_facebook_posts_form" model="ir.ui.view">
+          <field name="name">view.facebook.posts.form</field>
+          <field name="model">facebook.posts</field>
+          <field name="arch" type="xml">
+              <form string="Facebook Post">
+                  <header>
+                      <button name="publish_post_facebook" string="Publish" class="oe_highlight" states="draft" type="object"/>
+                      <button name="publish_post_facebook" string="Republish" class="oe_highlight" states="publish" type="object"/>
+                      <!--<button name="fetch_comment" string="Fetch Comment" class="oe_highlight" states="publish" type="object"/>-->
+                      <!--<button name="test_date" string="test Date" class="oe_highlight" states="publish" type="object"/>-->
+                      <!--<button name="get_likes" string="Get Like Count" class="oe_highlight" states="publish" type="object"/>-->
+                      <button name="delete_facebook_post" string="Remove FB Post" states="publish" type="object" confirm="Are You Sure Delete This Post From Facebook"/>
+                      <field name="state" widget="statusbar" statusbar_visible="draft,publish,removed" clickable="1" />
+                  </header>
+                  <sheet>
+                      <div class="oe_button_box" name="button_box">
+                          <button name="get_likes" type="object" widget="statinfo" class="oe_stat_button" icon="fa-thumbs-o-up">
+                                <div class="o_stat_info o_field_widget">
+                                    <span class="o_stat_text">Like</span>
+                                    <field name="like_count" readonly="1" />
+                                </div>
+                          </button>
+                          <button name="fetch_comment" type="object" widget="statinfo" class="oe_stat_button" icon="fa-comments-o">
+                                <div class="o_stat_info o_field_widget">
+                                    <span class="o_stat_text">Comment</span>
+                                    <field name="comment_count" />
+                                </div>
+                          </button>
+                      </div>
+
+                      <div class="oe_title">
+                          <label for="title" class="oe_edit_only"/>
+                          <h1>
+                              <field name="title" placeholder="......"/>
+                          </h1>
+                      </div>
+
+                      <group col="4">
+                          <field name="page_config_id"/>
+                          <field name="on_create_date" readonly="1"/>
+                          <field name="publish_date" readonly="1"/>
+                          <field name="facebook_post_id" invisible="1"/>
+                      </group>
+                      <notebook>
+                          <page string="Message">
+                              <group>
+                                  <field name="message" nolabel="1"/>
+                              </group>
+                              <button name="put_like_for_this_post" type="object" string="check Like"/>
+                              <group>
+                                  <field name="link" nolabel="0"/>
+                              </group>
+                          </page>
+                          <page string="Photos">
+                              <group>
+                                  <button name="open_image" type="object" string="test Image"/>
+                                  <field name="image" widget="image" options="{'preview_image': 'image'}" />
+                              </group>
+                          </page>
+                          <page string="Comments">
+                              <group>
+                                  <field name="comments_ids" nolabel="1">
+                                      <tree>
+                                            <field name="post_id" invisible="1"/>
+                                            <field name="create_by_fb_id" invisible="1"/>
+                                            <field name="create_by"/>
+                                            <field name="create_time"/>
+                                            <field name="comments"/>
+                                            <field name="facebook_comment_id" invisible="1"/>
+                                      </tree>
+                                  </field>
+                              </group>
+                          </page>
+                      </notebook>
+                  </sheet>
+              </form>
+          </field>
+      </record>
+
+
+        <!--TODO: Add Action button in Dropdown menu "Action" to Set State Done by using Wizard -->
+        <!--<act_window id="delete_post_form_facebook"-->
+            <!--multi="True"-->
+            <!--key2="client_action_multi"-->
+            <!--name="Delete Facebook Post"-->
+            <!--src_model="facebook.posts"-->
+            <!--res_model="delete.facebook.post"-->
+            <!--view_mode="form" target="new" view_type="form"-->
+
+        <!--/>-->
+
+
+    <record id="view_facebook_posts_tree" model="ir.ui.view">
+        <field name="name">view.facebook.posts.tree</field>
+        <field name="model">facebook.posts</field>
+        <field name="arch" type="xml">
+            <tree string="Facebook Posts">
+                <field name="title"/>
+                <field name="page_config_id"/>
+                <field name="publish_date"/>
+            </tree>
+        </field>
+    </record>
+
+
+      <record id="view_facebook_posts_action" model="ir.actions.act_window">
+          <field name="name">Facebook Posts</field>
+          <field name="type">ir.actions.act_window</field>
+          <field name="res_model">facebook.posts</field>
+          <field name="view_mode">tree,form</field>
+      </record>
+
+      <!-- This Menu Item must have a parent and an action -->
+      <menuitem id="facebook_post_menu_action" name="Posts" parent="facebook_menu_root" action="view_facebook_posts_action" sequence="1"/>
+  </data>
+</eagle>
